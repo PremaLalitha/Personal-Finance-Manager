@@ -1,0 +1,22 @@
+Debugging steps for monthly comparison error:
+
+1. In monthly-comparison.html, add before fetch:
+   console.log("Customer ID from localStorage:", customerId);
+
+2. In TransactionService.java, update getMonthlyComparison method to add logging:
+   try {
+       // existing code
+   } catch (Exception e) {
+       System.err.println("Error in getMonthlyComparison: " + e.getMessage());
+       throw e;
+   }
+
+3. In browser dev tools, check network tab for the API request to /api/transaction/monthly-comparison/{customerId}:
+   - Check response status and body.
+   - Check console for any errors.
+
+4. Verify customerId is set in localStorage before loading monthly-comparison.html.
+
+5. Confirm backend server is running and accessible.
+
+Please perform these steps and share any error messages or logs you find for further assistance.

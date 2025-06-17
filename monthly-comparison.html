@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monthly Comparison</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Blur the background */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('coin.jpg') no-repeat center center/cover;
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    .comparison-container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 2em;
+      border-radius: 10px;
+      color: white;
+      width: 80%;
+      max-width: 900px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .comparison-details {
+      margin-top: 20px;
+    }
+
+    .comparison-details p {
+      font-size: 1.2em;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      display: block;
+      text-align: center;
+      padding: 10px 20px;
+      background-color: #f22;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .top-back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background-color: #f22;
+      border: none;
+      color: white;
+      font-size: 1em;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .top-back-btn:hover {
+      background-color: #d00;
+    }
+  </style>
+</head>
+<body>
+  <button class="top-back-btn" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+  
+  <div class="comparison-container">
+    <h2>Monthly Spending Comparison</h2>
+    <div class="comparison-details">
+      <p>This Month's Income: <span id="this-month-income">$0.00</span></p>
+      <p>This Month's Expense: <span id="this-month-expense">$0.00</span></p>
+      <p>Last Month's Income: <span id="last-month-income">$0.00</span></p>
+      <p>Last Month's Expense: <span id="last-month-expense">$0.00</span></p>
+      <p id="warning-message" style="color: yellow; font-weight: bold; margin-top: 20px;"></p>
+    </div>
+  </div>
+
+  <script>
+    const thisMonthIncomeElem = document.getElementById('this-month-income');
+    const thisMonthExpenseElem = document.getElementById('this-month-expense');
+    const lastMonthIncomeElem = document.getElementById('last-month-income');
+    const lastMonthExpenseElem = document.getElementById('last-month-expense');
+    const warningMessageElem = document.getElementById('warning-message');
+
+     const customerId = localStorage.getItem('customerId');
+
+    async function fetchMonthlyComparison() {
+      try {
+        const response = await fetch(`/api/transaction/monthly-comparison/${customerId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch monthly comparison');
+        }
+        const data = await response.json();
+
+        thisMonthIncomeElem.textContent = '$' + data.thisMonthIncome.toFixed(2);
+        thisMonthExpenseElem.textContent = '$' + data.thisMonthSpending.toFixed(2);
+        lastMonthIncomeElem.textContent = '$' + data.lastMonthIncome.toFixed(2);
+        lastMonthExpenseElem.textContent = '$' + data.lastMonthSpending.toFixed(2);
+        warningMessageElem.textContent = data.warningMessage || '';
+      } catch (error) {
+        thisMonthIncomeElem.textContent = 'Error';
+        thisMonthExpenseElem.textContent = 'Error';
+        lastMonthIncomeElem.textContent = 'Error';
+        lastMonthExpenseElem.textContent = 'Error';
+        warningMessageElem.textContent = "";
+        console.error('Error fetching monthly comparison:', error.message || error);
+      }
+    }
+
+    fetchMonthlyComparison();
+  </script>
+</body>
+</html>
